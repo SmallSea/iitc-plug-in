@@ -3,7 +3,7 @@
 // @name           IITC plugin: Publish well-formed portal information
 // @author         SmallSea
 // @category       Debug
-// @version        0.1.1.4
+// @version        0.1.1.5
 // @namespace      pInfo
 // @updateURL      https://github.com/SmallSea/iitc-plugin/raw/master/debug-publish-info.user.js
 // @downloadURL    https://github.com/SmallSea/iitc-plugin/raw/master/debug-publish-info.user.js
@@ -144,21 +144,32 @@ window.plugin.pInfo.showPortalData = function(guid) {
 
   for (var i = 0; i < ornaments.length; i++) {
     if (ornaments[i] == 'peFRACK') {
-        frackerString = '( Notice: Portal fracker is frying NOW!!! ) <br />';
+        frackerString = '( Notice: Portal fracker is frying NOW!!! ) \n';
     }
   }
 
   var body =
-    data.team + ' / L' + data.level + ' / ' + data.title + '<br />' + 
+    data.team + ' / L' + data.level + ' / ' + data.title + '\n' + 
     frackerString +
-    'MODs: ' + modstring.join("/") +'<br />' + 
-    'Agents: ' + uniqueAgents.join(" ") +'<br />' + 
-    'Intel: http://ingress.com/intel?pll=' + ll + '&z=17 <br />' +
+    'MODs: ' + modstring.join("/") +'\n' + 
+    'Agents: ' + uniqueAgents.join(" ") +'\n' + 
+    'Intel: http://ingress.com/intel?pll=' + ll + '&z=17 \n' +
     'gMap: http://maps.google.com/?q=' + ll;
 
+  var text =
+	'<textarea id = "pInfo" readonly = "readonly">'+ body +'</textarea>' +
+	'<button id = "copy-button" type = "button"> Copy </button>' +
+	'<script>' +
+	'  document.getElementById("copy-button").addEventListener("click", function (event) {' +
+	'    event.preventDefault();' +
+	'    document.getElementById("pInfo").select();' +
+	'    document.execCommand("copy");' +
+	'  });' +
+	'</script>';
+	  
   dialog({
     title: title,
-    html: body,
+    html: text,
     id: 'dialog-pInfo',
     dialogClass: 'ui-dialog-pInfo',
   });
@@ -167,16 +178,33 @@ window.plugin.pInfo.showPortalData = function(guid) {
 var setup = function () {
   window.plugin.pInfo.setupCallback();
   $('head').append('<style>' +
-      '.ui-dialog-pInfo {' +
-        'width: auto !important;' +
-        'min-width: 400px !important;' +
-        //'max-width: 600px !important;' +
-    '}' +
-      '#dialog-pInfo {' +
-        'overflow-x: auto;' +
-        'overflow-y: auto;' +
-    '}' +
-    '</style>');
+    '.ui-dialog-pInfo { '+
+	'  width: 550px !important; '+
+	'}' +
+	'#dialog-pInfo {' +
+	'  overflow-x: auto;' +
+	'  overflow-y: auto;' +
+	'}' +
+	'#pInfo {' +
+	'  width: 100%;' +
+	'  height: 100px;' +
+	'  resize: none;' +
+	'  overflow: auto;' +
+    '  background-color: rgba(8, 48, 78, 0.9);' +
+	'  color: white;' +
+	'  outline: none;' +
+	'  border-color: #20a8b1;' +
+	'}'+
+	'#copy-button {' +
+	'  float: right;' +
+	'  margin-top: 4px;' +
+	'  margin-right: -6px;' +
+	'  margin-bottom: -6px;' +
+	'}' +
+	'#copy-button: hover {' +
+	'  text-decoration: underline;' +
+	'}' +
+  '</style>');
 }
 
 
@@ -195,5 +223,3 @@ var info = {};
 if (typeof GM_info !== 'undefined' && GM_info && GM_info.script) info.script = { version: GM_info.script.version, name: GM_info.script.name, description: GM_info.script.description };
 script.appendChild(document.createTextNode('('+ wrapper +')('+JSON.stringify(info)+');'));
 (document.body || document.head || document.documentElement).appendChild(script);
-
-
